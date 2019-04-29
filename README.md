@@ -1,2 +1,2 @@
 # clobble
-Gobble 2.0
+Coding exercise - calculating ten-pin bowling score cards
