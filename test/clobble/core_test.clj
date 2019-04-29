@@ -67,6 +67,13 @@
               :score      299}
              (tally-frames (conj (vec (repeat 9 strike))
                                  [10 10 9])))))
+    (testing "Botched the last roll"
+      (is (= {:max-frames 10
+              :frames     (conj (vec (repeat 9 strike))
+                                [10 10 0])
+              :score      290}
+             (tally-frames (conj (vec (repeat 9 strike))
+                                 [10 10 0])))))
     (testing "Disappointing last frame"
       (is (= {:max-frames 10
               :frames     (conj (vec (repeat 9 strike))
@@ -89,6 +96,7 @@
 
   (testing "Unacceptable frame"
     (is (thrown? AssertionError (tally-frames [[7 7]])))
+    (is (thrown? AssertionError (tally-frames [[7 7]])))
     (is (thrown? AssertionError (tally-frames [[1 2 3]])))
     (is (thrown? AssertionError (tally-frames [[7 3 3]])))
     (is (thrown? AssertionError (tally-frames [[10 3 3]])))
@@ -97,4 +105,6 @@
     (is (thrown? AssertionError (tally-frames (conj (vec (repeat 9 strike))
                                                     [10 10 10 10]))))
     (is (thrown? AssertionError (tally-frames (conj (vec (repeat 9 strike))
-                                                    [10 10]))))))
+                                                    [10 10]))))
+    (is (thrown? AssertionError (tally-frames (conj (vec (repeat 9 strike))
+                                                    [10 10 12]))))))

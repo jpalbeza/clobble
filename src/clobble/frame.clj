@@ -1,19 +1,19 @@
 (ns clobble.frame)
 
-(defn- is-a-number-greater-than-equal-to-zero
+(defn- is-a-valid-roll-score?
   [n]
   (and (number? n)
-       (<= 0 n)))
+       (<= 0 n 10)))
 
 (defn ->named-score
   ([r] (when (= r 10) :strike))
-  ([r1 r2] (when (every? is-a-number-greater-than-equal-to-zero [r1 r2])
+  ([r1 r2] (when (every? is-a-valid-roll-score? [r1 r2])
              (let [roll-sum (+ r1 r2)]
                (cond (= 10 roll-sum) :spare
                      (> 10 roll-sum) :not-special))))
   ([r1 r2 r3] (when (or (= :strike (->named-score r1))
                         (= :spare (->named-score r1 r2)))
-                (when (pos? r3)
+                (when (is-a-valid-roll-score? r3)
                   :final-with-bonus)))
   ([_ _ _ _ & _] nil))
 
