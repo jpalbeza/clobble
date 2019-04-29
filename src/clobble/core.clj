@@ -54,11 +54,13 @@
       )))
 
 (defn score
-  [{:keys [max-frames frames]}]
-  (->> (range max-frames)
-       (map #(->numeric-frame-score (drop % frames)))
-       (take-while number?)
-       (reduce +)))
+  [{:keys [max-frames frames] :as card}]
+  (assoc card :score (->> (range max-frames)
+                          (map #(drop % frames))
+                          (take-while (comp not empty?))
+                          (map ->numeric-frame-score)
+                          (take-while number?)
+                          (reduce +))))
 
 (defn tally-frame
   [card & frame]
