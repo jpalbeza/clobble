@@ -10,9 +10,14 @@
   [{:keys [max-frames frames]}]
   (>= (count frames) max-frames))
 
+(defn is-a-number-greater-than-equal-to-zero
+  [n]
+  (and (number? n)
+       (<= 0 n)))
+
 (defn ->named-frame-score
   ([r] (when (= r 10) :strike))
-  ([r1 r2] (when (every? pos? [r1 r2])
+  ([r1 r2] (when (every? is-a-number-greater-than-equal-to-zero [r1 r2])
              (if (= 10 (+ r1 r2))
                :spare
                :not-special)))
@@ -50,8 +55,7 @@
       :strike (->strike-score remaining-frames)
       :spare (->spare-score remaining-frames)
       :not-special (reduce + current-frame)
-      ;; TODO :final-with-bonus (reduce + current-frame)
-      )))
+      :final-with-bonus (reduce + current-frame))))
 
 (defn score
   [{:keys [max-frames frames] :as card}]
@@ -62,9 +66,24 @@
                           (take-while number?)
                           (reduce +))))
 
+(def non-final-frames? #{:strike :spare :not-special})
+(def final-frames? #{:not-special :final-with-bonus})
+
+(defn- is-1-frame-to-go
+  [{:keys [max-frames frames]}]
+  (= max-frames (+ 1 (count frames))))
+
+(defn- is-valid-frame?
+  [card frame]
+  (let [named-score (apply ->named-frame-score frame)]
+    (or (and (is-1-frame-to-go card)
+             (final-frames? named-score))
+        (non-final-frames? named-score))))
+
 (defn tally-frame
   [card & frame]
-  {:pre [(not (is-finished? card))]}
+  {:pre [(not (is-finished? card))
+         (is-valid-frame? card frame )]}
   (-> card
       (update :frames conj frame)
       score))

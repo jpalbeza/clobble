@@ -71,4 +71,35 @@
            (tally-frames (repeat 2 not-special)))))
 
   (testing "Card already finished"
-    (is (thrown? AssertionError (tally-frames (repeat 11 not-special))))))
+    (is (thrown? AssertionError (tally-frames (repeat 11 not-special)))))
+
+  (testing "Non final final-with-bonus scenario"
+    (is (thrown? AssertionError (tally-frames [[10 10 10]]))))
+
+  (testing "Final scenarios"
+    (testing "Perfect game"
+      (is (= {:max-frames 10
+              :frames     (conj (vec (repeat 9 strike))
+                                [10 10 10])
+              :score      300}
+             (tally-frames (conj (vec (repeat 9 strike))
+                                 [10 10 10])))))
+    (testing "Almost perfect game"
+      (is (= {:max-frames 10
+              :frames     (conj (vec (repeat 9 strike))
+                                [10 10 9])
+              :score      299}
+             (tally-frames (conj (vec (repeat 9 strike))
+                                 [10 10 9])))))
+    (testing "Disappointing last frame"
+      (is (= {:max-frames 10
+              :frames     (conj (vec (repeat 9 strike))
+                                [0 0])
+              :score      240}
+             (tally-frames (conj (vec (repeat 9 strike))
+                                 [0 0])))))
+    (testing "So so game"
+      (is (= {:max-frames 10
+              :frames     (repeat 10 not-special)
+              :score      50}
+             (tally-frames (repeat 10 not-special)))))))
